@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+ <meta charset="utf-8">
+ <title>ARF GUI</title>
+ 
+<link rel="stylesheet"  type="text/css" href="{{url_for('static', filename='css/main.css')}}">
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+      displayMath: [ ['$$','$$'], ['[[', ']]'] ],
+      processEscapes: false
+    },
+    TeX: {
+  extensions: ["AMSmath.js","AMSsymbols.js"]
+}
+  });
+</script>
+    
+<script type="text/javascript"
+        src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+
+<script type="text/javascript">  
+           function selects(sel = 0){  
+               if (sel == 0){
+                   var ele=document.getElementsByName('re');  
+               }else{
+                   var ele=document.getElementsByName('fu');
+               }
+               
+               for(var i=0; i<ele.length; i++){  
+                   if(ele[i].type=='checkbox')  
+                       ele[i].checked=true;  
+               }  
+           }  
+           function deSelect(sel = 0){  
+               if (sel == 0){
+                   var ele=document.getElementsByName('re');  
+               }else{
+                   var ele=document.getElementsByName('fu');
+               }
+               for(var i=0; i<ele.length; i++){  
+                   if(ele[i].type=='checkbox')  
+                       ele[i].checked=false;  
+                     
+               }  
+           }             
+</script>
+
+<script>
+    $(document).ready(function(){
+      $('.question_display').on('click', '.navigate', function(){
+        var direction = 'b';
+        if ($(this).prop('id') === 'go_forward'){
+          direction = 'f';
+        }
+
+        $.ajax({
+         url: "/get_question",
+         type: "get",
+         data: {direction: direction},
+         success: function(response) {
+            const cont = response.question;
+            const c = response.ans;
+            const syncTypeset = document.querySelector('#question_displayyy')
+            $('#question_displayyy').html(cont);
+            $('#ans_displayyy').html(c);
+            MathJax.Hub.Queue(
+ 				function () { $('#question_displayyy').html(cont);},
+ 				["Typeset", MathJax.Hub, '#question_displayyy']
+ 			);
+         },
+       });
+      });
+    });
+   </script>
+
+<script>
+function myFunction() {
+  var x = document.getElementById("form");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
+
+function ans() {
+  var x = document.getElementById("ans_displayyy");
+  if (x.style.display === "block") {
+    x.style.display = "none";
+  } else {
+    x.style.display = "block";
+  }
+}
+function ans2() {
+  var x = document.getElementById("ans_displayyy");
+  x.style.display = "none";
+}
+
+
+
+
+function dark() {
+  var element = document.body;
+  var x = document.getElementById("egg");
+  if (x.style.display === "block") {
+    x.style.display = "none";
+  } else {
+    x.style.display = "block";
+  }
+  element.classList.toggle("dark-mode");
+
+}
+</script>
+
+
+</head>
+
+<body>
+
+<div style="display:none">
+\(
+\require{AMSmath}
+\newcommand{\p}[1]{\left( #1 \right)}
+\newcommand{\set}[1]{\left\{ #1 \right\}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Na}{\mathbb{N}}
+\newcommand{\N}{\mathcal{N}}
+\newcommand{\P}{\mathcal{P}}
+\newcommand{\M}{\mathcal{M}}
+\newcommand{\L}{\mathcal{L}}
+\newcommand{\sa}{\sigma\text{-alg}}
+\newcommand{\abs}[1]{\lvert #1 \rvert}
+\newcommand{\norm}[1]{\lVert #1 \rVert}
+\newcommand{\dmu}{\,d\mu}
+\)
+</div>
+
+    <h1 class="glow" id="egg">SOAVE IS WATCHING YOU!</h1>
+
+    <div class="centerDiv" id="form">
+        <form method="post" name="capitoli">
+
+            <label class="container">
+            <h1>Real Analysis</h1>
+
+                {% for file in FILES[0] %}
+                <label><input type="checkbox" name="re" value="{{file}}"/> {{file[:-3]}}<br></label>
+                {% endfor %}
+                <input type="button" onclick='selects(0)' value="Select All Real"/> 
+                <input type="button" onclick='deSelect(0)' value="Deslect All Real"/>   
+            </label>
+      
+             <label class="container">
+                <h1>Functional Analysis</h1>
+                 {% for file in FILES[1] %}
+                 <label><input type="checkbox" name="fu" value="{{file}}"/> {{file[:-3]}}<br></label>
+                 {% endfor %}
+                 <input type="button" onclick='selects(1)' value="Select All Functional"/> 
+                 <input type="button" onclick='deSelect(1)' value="Deselect All Functional"/>  
+             </label>
+
+            <input type="submit" class="btnDiv" value="Load Questions">
+        </form>
+    </div>
+    
+    <div class="centerDiv">
+    <button class="btn" onclick="myFunction()">Toggle Question Selector</button>
+    <button class="btn" onclick="dark()">Toggle Dark Mode</button>
+    </div>
+
+
+<div class="question_display">
+
+    <div class="question_displayyy" id="question_displayyy">
+        
+    </div>
+        <div class="ans_displayyy" id="ans_displayyy">
+            
+        </div>
+
+ <div label="container">
+ 
+ <table>
+ <tr>
+   <td class="back"><button id="go_backward" class="navigate" onclick="ans2()">Backward</button></td>
+   <td class="forward"><button id="go_forward" class="navigate" onclick="ans2()">Forward</button></td>
+   <td><button class="btn" onclick="ans()">Toggle answer</button></td>
+ </tr>
+</table>
+
+</div>
+</div>
+</body>
+</html> 
